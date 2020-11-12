@@ -81,11 +81,13 @@ Otherwise, `MiddlewareListener` will create an error response.
 ## Writing Middleware
 
 ### `MiddlewareInterface` vs. `RequestHandlerInterface`
+
 _Middleware_ is code sitting between a request and a response; it typically analyzes the request to aggregate incoming data, delegates it to another layer to process, and then creates and returns a response.
 
 A _RequestHandler_ is a class that receives a request and returns a response, without delegating to other layers of the application. This is generally the inner-most layer of your application.
 
-For more in-depth documentation visit the [Mezzio](https://docs.mezzio.dev/mezzio/v3/getting-started/features/) or [Stratigility](https://docs.laminas.dev/laminas-stratigility/v3/intro/) docs.
+For more in-depth documentation visit the documentation for [Mezzio](https://docs.mezzio.dev/mezzio/v3/getting-started/features/)
+and [Stratigility](https://docs.laminas.dev/laminas-stratigility/v3/intro/) or the [PSR specification](https://www.php-fig.org/psr/psr-15/).
 
 ### Request Handlers
 
@@ -128,12 +130,13 @@ class SomeMiddleware implements MiddlewareInterface
 }
 ```
 
-Middleware normally doesn't create a direct response but does some work needed later on,
-e.g. fetching a User object from the database or setting application locale. In laminas-mvc there is no _global_
-middleware pipe, so its use is more limited than in Mezzio.
+Middleware can return a direct response, in effect short-circuiting the middleware pipe, or pass request further
+while having a chance to act on passed request or returned response.
+Middleware in laminas-mvc is similar to [routed middleware](https://docs.mezzio.dev/mezzio/v3/features/router/piping/#routing)
+in Mezzio. Laminas-mvc does not have a global middleware pipes, so middleware can not be piped in front of MVC controllers.
 
 ## Middleware return values
 
-Your middleware must return a PSR-7 response (`\Psr\Http\Message\ResponseInterface`). It is converted back to a
+As middleware returns a PSR-7 response (`\Psr\Http\Message\ResponseInterface`) it is converted back to a
 laminas-http response and returned by the `MiddlewareListener`, causing the application to
 short-circuit and return the response immediately.
